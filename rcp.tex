@@ -1,0 +1,110 @@
+\documentclass[12pt,a4paper,english,DIV=15,oneside,parskip=half]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{csquotes}
+\usepackage[unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 0},backref=none,colorlinks=false]
+ {hyperref}
+\hypersetup{pdftitle={reliable communications protocol},
+ pdfsubject={reliable communications protocol}}
+
+\renewcommand{\sfdefault}{cmbr}
+\renewcommand{\familydefault}{\sfdefault}
+
+\begin{document}
+\title{Reliable Communications Protocol}
+\author{--DRAFT--}
+
+\maketitle
+
+\begin{abstract}
+
+RCP is designed as a standard protocol for general purpose needs. It is specifically crafted to work on a processor with word-based addressing and a word size of 16 bits -- yes you guessed right, I\rq{}m talking about the DCPU-16.
+
+\end{abstract}
+
+It provides a few features that are important in this environment:
+\begin{itemize}
+\item Small header size for low memory consumption
+\item Word alignment
+\item Out-of-order proction via sequence numbering
+\item Extensible design
+\end{itemize}
+
+\section{Paket flow}
+
+As the structure of 0x10c\rq{}s network is completly unclear, no routing mechanism are specified so far.
+
+\section{Header}
+
+% Table generated with LyX, see table.lyx
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\cline{1-8} 
+\multicolumn{4}{|c|}{loword} & \multicolumn{4}{c|}{hiword} & \multicolumn{1}{c}{}\tabularnewline
+\cline{1-8} 
+\multicolumn{2}{|c|}{lobyte} & \multicolumn{2}{c|}{hibyte} & \multicolumn{2}{c|}{lobyte} & \multicolumn{2}{c|}{hiword} & \multicolumn{1}{c}{}\tabularnewline
+\hline 
+lonibble & hinibble & lonibble & hinibble & lonibble & hinibble & lonibble & hinibble & \#\tabularnewline
+\hline 
+\multicolumn{4}{|c|}{``RP'' (literal value)} & \multicolumn{2}{c|}{Port number} & \multicolumn{2}{c|}{Sequence number} & 0\tabularnewline
+\hline 
+\multicolumn{8}{|c|}{source address} & 1\tabularnewline
+\hline 
+\multicolumn{8}{|c|}{target address} & 2\tabularnewline
+\hline 
+Flags & Version & \multicolumn{2}{c|}{Paket length} & \multicolumn{4}{c|}{Checksum} & 3\tabularnewline
+\hline 
+ &  &  &  &  &  &  &  & 4\tabularnewline
+\hline 
+ &  &  &  &  &  &  &  & 5\tabularnewline
+\hline 
+ &  &  &  &  &  &  &  & 6\tabularnewline
+\hline 
+ &  &  &  &  &  &  &  & \tabularnewline
+\cline{1-1} \cline{9-9} 
+\end{tabular}
+
+\begin{description}
+\item[Port number] The port number designates a service on the target; if no service is bound the target is free to discard this paket. This field is only 8 bits wide, as the high memory constraints of the DCPU-16 won\rq{}t allow many services at all, which means that there is just no demand for more than 250 services on a single computer.
+
+\item[Sequence number] In common networks there is no guarentee that pakets will be received in the order they are sent. For leveraging this we introduced the sequence number, a common element of \enquote{real} network protocols. The sender increases this number for every paket sent to the same target address. The target can then reconstruct the packets\rq{} ordering.
+
+\item[Source address] The senders\rq{} address
+
+\item[Target address] The targets\rq{} address
+
+\item[Flags] So far no flags have been specified
+
+\item[Version] The current version is 0x0. The version will be incremented when backwards-incompatible changes are made to the protocol.
+
+\item[Paket length] The paket length \emph{in doublewords} (32 bits/4 bytes). This does \emph{not} include the eight words long header, which accounts for a payload of exactly 1024 bytes or 1K. The maximum paket size is thus 1040 bytes / 520 words.
+
+\item[Checksum] A one word large cyclic redundancy check, optional. When not used, the provided value should be 0x0000.
+
+\item[Reserved space] Reserved space should always be zero
+\end{description}
+
+\section{Addressing}
+
+Addresses are made up of two words or 64-bits. The address space is completly linear. Currently two addresses are predefined:
+
+\begin{description}
+\item[0x0000 0000] is always the address of the local computer (equivalent to 127.0.0.1 in IPv4)
+\item[0xFFFF FFFF] stands for invalid address, the paket should be discarded.
+\end{description}
+
+By the way, two words address space should be more than sufficient. $2^{64}$ addresses mean round about 18.4 \emph{quintillion} computers.
+
+\enquote{\emph{But addresses normally don\rq{}t equal to computers?}} you may now ask. And you\rq{}re right, TCP/IP does not make assumptions about how many addresses a computer owns, but we make one. This specification prohibits use of multiple addresses on a single computer.
+
+\section{Todo-List}
+
+\begin{itemize}
+\item Specify a way for computers to find their address
+\item Specifiy, if necessary, a routing mechanism
+\item Describe CRC algorithm
+\end{itemize}
+
+\end{document}
