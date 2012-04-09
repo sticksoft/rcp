@@ -29,13 +29,13 @@ It provides a few features that are important in this environment:
 \begin{itemize}
 \item Small header size for low memory consumption
 \item Word alignment
-\item Out-of-order proction via sequence numbering
+\item Out-of-order protection via sequence numbering
 \item Extensible design
 \end{itemize}
 
-\section{Paket flow}
+\section{Packet flow}
 
-As the structure of 0x10c\rq{}s network is completly unclear, no routing mechanism are specified so far.
+As the structure of 0x10c\rq{}s network is completly unclear, no routing mechanisms are specified so far.
 
 \section{Header}
 
@@ -54,7 +54,7 @@ lonibble & hinibble & lonibble & hinibble & lonibble & hinibble & lonibble & hin
 \hline 
 \multicolumn{8}{|c|}{target address} & 2\tabularnewline
 \hline 
-Flags & Version & \multicolumn{2}{c|}{Paket length} & \multicolumn{4}{c|}{Checksum} & 3\tabularnewline
+Flags & Version & \multicolumn{2}{c|}{Packet length} & \multicolumn{4}{c|}{Checksum} & 3\tabularnewline
 \hline 
  &  &  &  &  &  &  &  & 4\tabularnewline
 \hline 
@@ -69,17 +69,17 @@ Flags & Version & \multicolumn{2}{c|}{Paket length} & \multicolumn{4}{c|}{Checks
 \begin{description}
 \item[Port number] The port number designates a service on the target; if no service is bound the target is free to discard this paket. This field is only 8 bits wide, as the high memory constraints of the DCPU-16 won\rq{}t allow many services at all, which means that there is just no demand for more than 250 services on a single computer.
 
-\item[Sequence number] In common networks there is no guarentee that pakets will be received in the order they are sent. For leveraging this we introduced the sequence number, a common element of \enquote{real} network protocols. The sender increases this number for every paket sent to the same target address. The target can then reconstruct the packets\rq{} ordering.
+\item[Sequence number] In common networks there is no guarentee that pakets will be received in the order they are sent. For leveraging this we introduced the sequence number, a common element of \enquote{real} network protocols. The sender increases this number for every packet sent to the same target address. The target can then reconstruct the packets\rq{} ordering.
 
-\item[Source address] The senders\rq{} address
+\item[Source address] The sender\rq{}s address
 
-\item[Target address] The targets\rq{} address
+\item[Target address] The target\rq{}s address
 
 \item[Flags] So far no flags have been specified
 
 \item[Version] The current version is 0x0. The version will be incremented when backwards-incompatible changes are made to the protocol.
 
-\item[Paket length] The paket length \emph{in doublewords} (32 bits/4 bytes). This does \emph{not} include the eight words long header, which accounts for a payload of exactly 1024 bytes or 1K. The maximum paket size is thus 1040 bytes / 520 words.
+\item[Packet length] The packet length \emph{in doublewords} (32 bits/4 bytes). This does \emph{not} include the eight words long header, which accounts for a payload of exactly 1024 bytes or 1K. The maximum packet size is thus 1040 bytes / 520 words.
 
 \item[Checksum] A one word large cyclic redundancy check, optional. When not used, the provided value should be 0x0000.
 
